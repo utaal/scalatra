@@ -1,6 +1,0 @@
-### scalatra
-* HaltException and PassException are now ControlThrowables. Applications should not catch these.
-* Return Unit instead of Nothing from redirect.
-
-### scalatra-scalate
-* ScalateSupport helpers render to return value instead of directly to response. [(GH-139)](http://github.com/scalatra/scalatra/issues/139)

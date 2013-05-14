@@ -1,11 +1,11 @@
 {
-  "organization" : "org.scalatra",
-  "name" : "scalatra",
-  "version" : "2.2.0",
-  "description" : "The core Scalatra framework",
-  "site" : "http://www.scalatra.org/",
-  "tags" : [ "web", "sinatra", "scalatra", "akka" ],
-  "docs" : "http://www.scalatra.org/guides/",
+  "organization" : "com.backyardscale.anatra",
+  "name" : "anatra",
+  "version" : "0.0.0",
+  "description" : "An even slimmer Scalatra",
+  "site" : "http://github.com/utaal/anatra",
+  "tags" : [ "web", "sinatra", "anatra" ],
+  "docs" : "http://github.com/utaal/anatra",
   "resolvers" : [ "https://oss.sonatype.org/content/repositories/releases" ],
   "dependencies" : [ {
     "organization" : "org.eclipse.jetty.orbit",
@@ -35,15 +35,10 @@
     "organization" : "org.joda",
     "name" : "joda-convert",
     "version" : "1.2"
-  }, {
-    "organization" : "com.typesafe.akka",
-    "name" : "akka-actor",
-    "version" : "2.1.0"
   } ],
   "scalas" : [ "2.10.0" ],
   "licenses" : [ {
-    "name" : "BSD",
-    "url" : "http://github.com/scalatra/scalatra/raw/HEAD/LICENSE"
+    "name" : "BSD"
   } ],
   "sbt" : false
 }

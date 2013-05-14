@@ -30,22 +30,6 @@ package object scalatra
   @deprecated("Use org.scalatra.servlet.ServletBase if you depend on the Servlet API, or org.scalatra.ScalatraBase if you don't.", "2.1.0")
   type ScalatraKernel = servlet.ServletBase
 
-  type CoreStackNoFlash = CorsSupport with FutureSupport
-  type CoreStackNoFlashWithCsrf = CoreStackNoFlash with CsrfTokenSupport
-  type CoreStackNoFlashWithXsrf = CoreStackNoFlash with XsrfTokenSupport
-
-  type FuturesAndFlashStack = FutureSupport with FlashMapSupport
-  type FuturesAndFlashStackWithCsrf = FuturesAndFlashStack with CsrfTokenSupport
-  type FuturesAndFlashStackWithXsrf = FuturesAndFlashStack with XsrfTokenSupport
-
-  type CoreStack = CorsSupport with FutureSupport with FlashMapSupport
-  type CoreStackWithCsrf = CoreStack with CsrfTokenSupport
-  type CoreStackWithXsrf = CoreStack with XsrfTokenSupport
-
-  type FullCoreStack = CoreStack with FileUploadSupport
-  type FileUploadStack = FutureSupport with FlashMapSupport with FileUploadSupport
-
-  
 //  class OptionDefaults[T](value: Option[T]) {
 //	  /**
 //	   * Returns the item contained in the Option if it is defined, otherwise, the default element for the type A

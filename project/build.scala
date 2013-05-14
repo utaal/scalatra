@@ -19,7 +19,7 @@ object ScalatraBuild extends Build {
     manifestSetting,
     publishSetting,
     resolvers ++= Seq(sonatypeNexusSnapshots),
-    (LsKeys.tags in LsKeys.lsync) := Seq("web", "sinatra", "scalatra", "akka"),
+    (LsKeys.tags in LsKeys.lsync) := Seq("web", "sinatra", "scalatra"),
     (LsKeys.docsUrl in LsKeys.lsync) := Some(new URL("http://www.scalatra.org/guides/"))
   ) ++ mavenCentralFrouFrou
 
@@ -31,11 +31,11 @@ object ScalatraBuild extends Build {
       Unidoc.unidocExclude := Seq("scalatra-example"),
       LsKeys.skipWrite := true
     ),
-    aggregate = Seq(scalatraCore, scalatraAuth, scalatraFileupload, scalatraCommands,
-      scalatraScalate, scalatraJson, scalatraSlf4j, scalatraAtmosphere,
+    aggregate = Seq(scalatraCore, scalatraFileupload, scalatraCommands,
+      scalatraScalate, scalatraJson,
       scalatraTest, scalatraScalatest, scalatraSpecs2,
-      scalatraExample, scalatraSwagger, scalatraJetty,
-      scalatraCommon, scalatraSwaggerExt)
+      scalatraExample, scalatraJetty,
+      scalatraCommon)
   )
 
   lazy val scalatraCommon = Project(
@@ -57,29 +57,15 @@ object ScalatraBuild extends Build {
         jUniversalChardet,
         mimeUtil,
         jodaTime,
-        jodaConvert,
-        akkaActor(sv) % "test"
+        jodaConvert
       )),
-      libraryDependencies <++= scalaVersion(sv => Seq(akkaActor(sv), akkaTestkit(sv) % "test")),
-      description := "The core Scalatra framework",
-      resolvers += "Akka Repo" at "http://repo.akka.io/repository"
+      description := "The core Scalatra framework"
     )
   ) dependsOn(
     scalatraSpecs2 % "test->compile",
     scalatraScalatest % "test->compile",
     scalatraCommon % "compile;test->test"
   )
-
-  lazy val scalatraAuth = Project(
-    id = "scalatra-auth",
-    base = file("auth"),
-    settings = scalatraSettings ++ Seq(
-      libraryDependencies ++= Seq(base64),
-      description := "Scalatra authentication module",
-      LsKeys.tags in LsKeys.lsync += "auth"
-    )
-  ) dependsOn(scalatraCore % "compile;test->test;provided->provided", scalatraCommands)
-
 
   lazy val scalatraFileupload = Project(
     id = "scalatra-fileupload",
@@ -89,17 +75,6 @@ object ScalatraBuild extends Build {
       description := "Commons-Fileupload integration with Scalatra"
     )
   ) dependsOn(scalatraCore % "compile;test->test;provided->provided")
-
-  lazy val scalatraAtmosphere = Project(
-    id = "scalatra-atmosphere",
-    base = file("atmosphere"),
-    settings = scalatraSettings ++ Seq(
-      libraryDependencies <++= scalaVersion(sv => Seq(akkaActor(sv), akkaTestkit(sv) % "test")),
-      libraryDependencies ++= Seq(atmosphereRuntime, atmosphereClient % "test", jettyWebsocket % "test"),
-      description := "Atmosphere integration for scalatra",
-      LsKeys.tags in LsKeys.lsync ++= Seq("atmosphere", "comet", "sse", "websocket")
-    )
-  ) dependsOn(scalatraJson % "compile;test->test;provided->provided")
 
   lazy val scalatraScalate = Project(
     id = "scalatra-scalate",
@@ -198,35 +173,6 @@ object ScalatraBuild extends Build {
     )
   ) dependsOn(scalatraTest % "compile;test->test;provided->provided")
 
-  lazy val scalatraSwagger = Project(
-    id = "scalatra-swagger",
-    base = file("swagger"),
-    settings = scalatraSettings ++ Seq(
-      libraryDependencies ++= Seq(json4sExt, swaggerCore, swaggerAnnotations),
-      description := "Scalatra integration with Swagger",
-      LsKeys.tags in LsKeys.lsync ++= Seq("swagger", "docs")
-    )
-  ) dependsOn(scalatraCore % "compile;test->test;provided->provided", scalatraJson % "compile;test->test;provided->provided")
-
-  lazy val scalatraSwaggerExt = Project(
-    id = "scalatra-swagger-ext",
-    base = file("swagger-ext"),
-    settings = scalatraSettings ++ Seq(
-      description := "Deeper Swagger integration for scalatra",
-      LsKeys.tags in LsKeys.lsync ++= Seq("swagger", "docs")
-    )
-  ) dependsOn(scalatraSwagger % "compile;test->test;provided->provided", scalatraCommands % "compile;test->test;provided->provided", scalatraAuth % "compile;test->test")
-
-  lazy val scalatraSlf4j = Project(
-    id = "scalatra-slf4j",
-    base = file("slf4j"),
-    settings = scalatraSettings ++ Seq(
-      libraryDependencies <++= scalaVersion(sv => Seq(grizzledSlf4j(sv), logbackClassic % "provided")),
-      description := "Scalatra integration with SLF4J and Logback",
-      LsKeys.tags in LsKeys.lsync ++= Seq("logging", "slf4js")
-    )
-  ) dependsOn(scalatraCore % "compile;test->test;provided->provided")
-
  lazy val scalatraExample = Project(
    id = "scalatra-example",
    base = file("example"),
@@ -234,22 +180,18 @@ object ScalatraBuild extends Build {
      resolvers ++= Seq(sonatypeNexusSnapshots),
      libraryDependencies += servletApi % "container;test",
      libraryDependencies += jettyWebsocket % "container;test",
-     libraryDependencies ++= Seq(jettyWebapp % "container;test", slf4jSimple),
+     libraryDependencies += jettyWebapp % "container;test",
      libraryDependencies += json4sJackson,
      description := "Scalatra example project",
      LsKeys.skipWrite := true
    )
  ) dependsOn(
    scalatraCore % "compile;test->test;provided->provided", scalatraScalate,
-   scalatraAuth, scalatraFileupload, scalatraJetty, scalatraCommands, scalatraAtmosphere
+   scalatraFileupload, scalatraJetty, scalatraCommands
  )
 
   object Dependencies {
     // Sort by artifact ID.
-    lazy val akkaActor: MM         = sv => "com.typesafe.akka"       %% "akka-actor"         % akkaVersion(sv)
-    lazy val akkaTestkit: MM       = sv => "com.typesafe.akka"       %% "akka-testkit"       % akkaVersion(sv)
-    lazy val atmosphereRuntime          =  "org.atmosphere"          % "atmosphere-runtime"  % "1.0.9"
-    lazy val atmosphereClient           =  "org.atmosphere"          % "wasync"              % "1.0.0.beta1"
     lazy val base64                     =  "net.iharder"             %  "base64"             % "2.3.8"
     lazy val commonsFileupload          =  "commons-fileupload"      %  "commons-fileupload" % "1.2.2"
     lazy val commonsIo                  =  "commons-io"              %  "commons-io"         % "2.4"
@@ -280,21 +222,12 @@ object ScalatraBuild extends Build {
     lazy val scalatest: MM         = sv => "org.scalatest"           %% "scalatest"          % scalatestVersion(sv)
     lazy val scalaz                     =  "org.scalaz"              %% "scalaz-core"        % "6.0.4"
     lazy val servletApi                 =  "org.eclipse.jetty.orbit" % "javax.servlet"       % "3.0.0.v201112011016" artifacts (Artifact("javax.servlet", "jar", "jar"))
-    lazy val slf4jSimple                =  "org.slf4j"               % "slf4j-simple"        % "1.7.2"
     lazy val specs: MM             = sv => "org.scala-tools.testing" %  "specs"              % specsVersion(sv)     cross specsCross
     lazy val specs2: MM            = sv => "org.specs2"              %% "specs2"             % specs2Version(sv)
-    lazy val swaggerAnnotations         =  "com.wordnik"             % "swagger-annotations" % swaggerVersion       cross swaggerCross
-    lazy val swaggerCore                =  "com.wordnik"             % "swagger-core"        % swaggerVersion       cross swaggerCross
     lazy val testJettyServlet           =  "org.eclipse.jetty"       %  "test-jetty-servlet" % jettyVersion
     lazy val testng                     =  "org.testng"              %  "testng"             % "6.8"
 
     type MM = String => ModuleID
-
-    private val akkaVersion: String => String = {
-      case "2.9.1"                      => "2.0.2"
-      case "2.9.2"                      => "2.0.5"
-      case _                            => "2.1.0"
-    }
 
     private val grizzledSlf4jVersion: String => String = {
       case sv if sv startsWith "2.9."   => "0.6.10"
@@ -345,12 +278,6 @@ object ScalatraBuild extends Build {
       case sv if sv startsWith "2.9."   => "1.12.3"
       case _                            => "1.13"
     }
-
-    private val swaggerCross = CrossVersion.binaryMapped {
-      case sv if sv startsWith "2.9."   => "2.9.1"
-      case _                            => "2.10.0"
-    }
-    private val swaggerVersion = "1.2.0"
   }
 
   object Resolvers {
