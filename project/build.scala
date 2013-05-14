@@ -31,7 +31,7 @@ object ScalatraBuild extends Build {
       Unidoc.unidocExclude := Seq("scalatra-example"),
       LsKeys.skipWrite := true
     ),
-    aggregate = Seq(scalatraCore, scalatraFileupload, scalatraCommands,
+    aggregate = Seq(scalatraCore, scalatraFileupload,
       scalatraScalate, scalatraJson,
       scalatraTest, scalatraScalatest, scalatraSpecs2,
       scalatraExample, scalatraJetty,
@@ -98,31 +98,6 @@ object ScalatraBuild extends Build {
     )
   ) dependsOn(scalatraCore % "compile;test->test;provided->provided")
 
-  lazy val scalatraCommands = Project(
-    id = "scalatra-commands",
-    base = file("commands"),
-    settings = scalatraSettings ++ Seq(
-      libraryDependencies ++= Seq(
-        "commons-validator"       % "commons-validator"  % "1.4.0",
-        "io.backchat.inflector"  %% "scala-inflector"    % "1.3.5" cross CrossVersion.binary
-      ),
-      libraryDependencies ++= Seq(scalaz, jodaTime, jodaConvert),
-      initialCommands :=
-        """
-          |import scalaz._
-          |import Scalaz._
-          |import org.scalatra._
-          |import org.scalatra.util._
-          |import conversion._
-          |import commands._
-          |import BindingSyntax._
-        """.stripMargin,
-      description := "Data binding and validation with scalaz for Scalatra",
-      LsKeys.tags in LsKeys.lsync += "validation"
-    )
-  ) dependsOn(
-    scalatraJson % "compile;test->test;provided->provided")
-
   lazy val scalatraJetty = Project(
     id = "scalatra-jetty",
     base = file("jetty"),
@@ -187,7 +162,7 @@ object ScalatraBuild extends Build {
    )
  ) dependsOn(
    scalatraCore % "compile;test->test;provided->provided", scalatraScalate,
-   scalatraFileupload, scalatraJetty, scalatraCommands
+   scalatraFileupload, scalatraJetty
  )
 
   object Dependencies {
